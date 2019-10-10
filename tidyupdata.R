@@ -3,8 +3,6 @@
 #resolver upload da base grande
 #ha problema em algum sequenciamento?
 
-library(lubridate)
-
 #cleanEnv
 cleanEnv <- function(){
   # Clean workspadyce
@@ -16,11 +14,13 @@ cleanEnv <- function(){
   # Clear console
   cat("\014");
   # Set working directory
-  setwd("~/Workspace/BPe - RelReceita")
+  setwd("~/coding/R/apuraReceitaBPe")
   return(getwd())
 }
 
 cleanEnv()
+
+library(lubridate)
 
 #preencheCampoDataEvento <- function(tipo_Doc){
 #  select <- eventosReceitaBPe$TpDV == tipo_Doc
@@ -32,7 +32,7 @@ cleanEnv()
 
 ## treats SAP S/4 ztsd033 table export
 ztsd033 <- read.csv(
-  "ZTSD033.XLS",header = TRUE,
+  "~/coding/R/BPe - RelReceita/ZTSD033.XLS",header = TRUE,
   sep="\t", fileEncoding='UTF-16LE',skip = 3,fill = TRUE )
 
 #removing empty columns
@@ -89,18 +89,19 @@ eventosReceitaBPe <- data.frame(
   dmy(ztsd033ordenado$Data)#,
 ) 
 
-for (Documento in docs) {
-  
-  campo_Data = dataDocs[match(Documento,dataDocs[,"Documento"]),"Campo Data"]
-  eventosReceitaBPe[select,"dataEvento"] <- eventosReceitaBPe[select,campo_Data]
-  
-}
 
 colnames(eventosReceitaBPe)<-(c(names(ztsd033ordenado)[1],names(ztsd033ordenado)[2],names(ztsd033ordenado)[3],names(ztsd033ordenado)[5],names(ztsd033ordenado)[6],names(ztsd033ordenado)[7],names(ztsd033ordenado)[8],names(ztsd033ordenado)[9],names(ztsd033ordenado)[10],names(ztsd033ordenado)[14],names(ztsd033ordenado)[15],names(ztsd033ordenado)[28],names(ztsd033ordenado)[30],"dataEvento"))
 
 
 largest_less_than<-function(x,y){
   which(x == max(x[x < y]))
+}
+
+
+for (Documento in docs) {
+  select <- eventosReceitaBPe$TpDV == Documento
+  campo_Data = dataDocs[match(Documento,dataDocs[,"Documento"]),"Campo Data"]
+  eventosReceitaBPe[select,"dataEvento"] <- eventosReceitaBPe[select,campo_Data]
 }
 
 
@@ -112,14 +113,12 @@ largest_less_than<-function(x,y){
 
 separaUltimoEventoBilhete<-function(IDRef, eventos, output){
   select <- eventos$ID.referen == IDRef
+  
   output <- c(output, c(eventosReceitaBPe$ID.Serviço[select]))
-  
-  eventosReceitaBPe
-  
 }
 
-eventosReceitaBPe$dataEvento[1]>dmy("04.07.2019")
-c(EventosPeriodo,itemNovo)
+#eventosReceitaBPe$dataEvento[1]>dmy("04.07.2019")
+#c(EventosPeriodo,itemNovo)
 
 
 
